@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadingElement = document.querySelector('.loading');
     const rankingsTableBody = document.querySelector('#rankings-table tbody');
     const suggestCityForm = document.getElementById('suggest-city-form');
-    const cityNameInput = document.getElementById('city-name');
+    const cityNameInput = document.getElementById('city-suggestion-input');
     const suggestionMessage = document.getElementById('suggestion-message');
     
     // Modal elements
@@ -110,10 +110,18 @@ document.addEventListener('DOMContentLoaded', () => {
             newCard.dataset.cityId = cityId;
             newCard.querySelector('.city-name').textContent = cityName;
             
+            // Reset pointer-events to ensure clickability
+            newCard.style.pointerEvents = 'auto';
+            
             // Add new event listener
             newCard.addEventListener('click', function() {
                 const selectedCard = this;
                 const otherCard = selectedCard.id === 'city1' ? document.getElementById('city2') : document.getElementById('city1');
+                
+                if (!selectedCard.dataset.cityId || !otherCard.dataset.cityId) {
+                    console.error('Missing city ID data', { selectedCard, otherCard });
+                    return;
+                }
                 
                 const winnerId = selectedCard.dataset.cityId;
                 const loserId = otherCard.dataset.cityId;
@@ -125,10 +133,20 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Submit comparison result
     function submitComparison(winnerId, loserId) {
+        // Validate input
+        if (!winnerId || !loserId) {
+            console.error('Invalid winner or loser ID', { winnerId, loserId });
+            return;
+        }
+        
         // Disable city cards during submission to prevent double-clicks
         document.querySelectorAll('.city-card').forEach(card => {
             card.style.pointerEvents = 'none';
         });
+        
+        // Show loading state
+        loadingElement.style.display = 'block';
+        citiesContainer.style.display = 'none';
         
         fetch('/api/comparison', {
             method: 'POST',
@@ -184,7 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => {
                 console.error('Error fetching rankings:', error);
-                rankingsTableBody.innerHTML = '<tr><td colspan="5">Error loading rankings. Please try again.</td></tr>';
             });
     }
     
@@ -210,7 +227,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Submit city suggestion
     function submitCitySuggestion() {
-        const cityName = cityNameInput.value.trim();
+        const cityInput = document.getElementById('city-suggestion-input');
+        const cityName = cityInput.value.trim();
+        const suggestionMessage = document.getElementById('suggestion-message');
         
         if (!cityName) {
             suggestionMessage.textContent = 'Please enter a city name';
@@ -232,7 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                cityNameInput.value = '';
+                cityInput.value = '';
                 suggestionMessage.textContent = data.message || 'Thank you for your suggestion!';
                 suggestionMessage.className = 'success';
                 
@@ -249,11 +268,45 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(error => {
             console.error('Error submitting suggestion:', error);
             suggestionMessage.textContent = 'An error occurred. Please try again.';
-            suggestionMessage.className = 'error';
-        });
     }
     
+    // Show loading state
+    suggestionMessage.textContent = 'Submitting suggestion...';
+    suggestionMessage.className = 'info';
+    
+    fetch('/api/cities/suggest', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cityName }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            cityInput.value = '';
+            suggestionMessage.textContent = data.message || 'Thank you for your suggestion!';
+            suggestionMessage.className = 'success';
+            
+            // Close modal after a delay
+            setTimeout(() => {
+                closeAllModals();
+            }, 2000);
+        } else {
+            // Display detailed error message
+            suggestionMessage.textContent = data.message || data.error || 'Failed to submit suggestion';
+            suggestionMessage.className = 'error';
+        }
+    })
+    .catch(error => {
+        console.error('Error submitting suggestion:', error);
+        suggestionMessage.textContent = 'An error occurred. Please try again.';
+        suggestionMessage.className = 'error';
+    });
+}
+    
     // Event Listeners
+    
     suggestCityForm.addEventListener('submit', (event) => {
         event.preventDefault();
         submitCitySuggestion();
