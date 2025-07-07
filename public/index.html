@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City ELO Rating System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>City ELO Rating System</h1>
+        <p>Which city do you prefer?</p>
+        <div class="nav-buttons">
+            <button id="show-rankings-btn">View Rankings</button>
+            <button id="show-suggest-btn">Suggest a City</button>
+        </div>
+    </header>
+
+    <main>
+        <section id="comparison-container">
+            <div class="loading">Loading cities...</div>
+            <div class="cities-container" style="display: none;">
+                <div class="city-card" id="city1">
+                    <h2 class="city-name"></h2>
+                </div>
+                <div class="vs">VS</div>
+                <div class="city-card" id="city2">
+                    <h2 class="city-name"></h2>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Modal background overlay -->
+        <div id="modal-overlay" class="modal-overlay" style="display: none;"></div>
+        
+        <!-- Suggest City Modal -->
+        <div id="suggest-city-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Suggest a City</h2>
+                <p>Don't see your favorite city? Suggest it here!</p>
+                <form id="suggest-city-form">
+                    <div class="form-group">
+                        <input type="text" id="city-name" placeholder="Enter city name" required>
+                    </div>
+                    <button type="submit" id="suggest-btn">Suggest City</button>
+                </form>
+                <div id="suggestion-message"></div>
+            </div>
+        </div>
+
+        <!-- Rankings Modal -->
+        <div id="rankings-modal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>City Rankings</h2>
+                <table id="rankings-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>City</th>
+                            <th>ELO Rating</th>
+                            <th>W/L</th>
+                            <th>Comparisons</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rankings will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>City ELO Rating System &copy; 2025</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
