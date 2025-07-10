@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Define API base URL - this helps with custom domain routing
+    const API_BASE_URL = '';
+    
     // DOM elements
     const citiesContainer = document.querySelector('.cities-container');
     const loadingElement = document.querySelector('.loading');
@@ -39,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadingElement.style.display = 'block';
         citiesContainer.style.display = 'none';
         
-        fetch('/api/cities/random')
+        fetch(`${API_BASE_URL}/api/cities/random`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -130,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             card.style.pointerEvents = 'none';
         });
         
-        fetch('/api/comparison', {
+        fetch(`${API_BASE_URL}/api/comparison`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -172,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Fetch city rankings
     function fetchRankings() {
-        fetch('/api/cities/rankings')
+        fetch(`${API_BASE_URL}/api/cities/rankings`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -222,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         suggestionMessage.textContent = 'Submitting suggestion...';
         suggestionMessage.className = 'info';
         
-        fetch('/api/cities/suggest', {
+        fetch(`${API_BASE_URL}/api/cities/suggest`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

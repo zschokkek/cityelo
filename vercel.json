@@ -6,11 +6,19 @@
       "use": "@vercel/node"
     },
     {
+      "src": "api/init-db.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "public/**",
       "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "/api/init-db",
+      "dest": "api/init-db.js"
+    },
     {
       "src": "/api/(.*)",
       "dest": "api/index.js"
